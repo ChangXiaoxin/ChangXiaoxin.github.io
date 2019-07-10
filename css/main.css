@@ -1855,7 +1855,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #58ffc1;
+  background: #9e9d13;
 }
 .feed-link,
 .chat {
@@ -3139,7 +3139,7 @@ body {
   }
   .header-inner {
     background: #fff;
-    opacity: 1;
+    opacity: 0.8;
   }
   .posts-expand .post-title-link::before {
     background-image: linear-gradient(90deg, #a166ab 0%, #ef4e7b 25%, #f37055 50%, #ef4e7b 75%, #a166ab 100%);
