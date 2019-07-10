@@ -1,30 +1,70 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search>
-  <entry>
-    <title><![CDATA[博客相关网站记录]]></title>
-    <url>%2F2019%2F07%2F10%2F%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E8%AE%B0%E5%BD%95%2F</url>
-    <content type="text"></content>
-  </entry>
-  <entry>
-    <title><![CDATA[RGB调光小夜灯]]></title>
-    <url>%2F2019%2F07%2F10%2FRGB%E8%B0%83%E5%85%89%E5%B0%8F%E5%A4%9C%E7%81%AF%2F</url>
-    <content type="text"><![CDATA[许多人晚上睡觉的时候都喜欢留一盏昏黄的夜灯，在昏黄的氛围中安然睡去，享受美好的睡眠，仿佛没有了它就无法入睡，缺少安全感一样。今天我们就带领大家制作一款颜色可调的小夜灯，无论你喜欢什么颜色，它都能满足你的需求。它以arduino开源硬件为主控，通过三个按钮来控制RGB-LED的颜色，并且还有独立的可充电锂电池，可以摆脱电源线的限制，轻轻松松享受高品质生活。接下来就跟我一起动手制作吧。 材料清单: 所需材料 3D打印外壳 Android mini pro控制器 RGB-LED模块 微动按键 TP4056充电模块 200mAh锂电池 细导线若干 自锁开关 制作过程1、将Arduino控制板与USB转TTL转接板连在一起然后插入电脑USB口中]]></content>
+<search> 
+  
+  
+    
+    <entry>
+      <title>博客相关网站记录</title>
+      <link href="/2019/07/10/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E8%AE%B0%E5%BD%95/"/>
+      <url>/2019/07/10/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E8%AE%B0%E5%BD%95/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>RGB调光小夜灯</title>
+      <link href="/2019/07/10/RGB%E8%B0%83%E5%85%89%E5%B0%8F%E5%A4%9C%E7%81%AF/"/>
+      <url>/2019/07/10/RGB%E8%B0%83%E5%85%89%E5%B0%8F%E5%A4%9C%E7%81%AF/</url>
+      
+        <content type="html"><![CDATA[<blockquote><p>许多人晚上睡觉的时候都喜欢留一盏昏黄的夜灯，在昏黄的氛围中安然睡去，享受美好的睡眠，仿佛没有了它就无法入睡，缺少安全感一样。今天我们就带领大家制作一款颜色可调的小夜灯，无论你喜欢什么颜色，它都能满足你的需求。它以arduino开源硬件为主控，通过三个按钮来控制RGB-LED的颜色，并且还有独立的可充电锂电池，可以摆脱电源线的限制，轻轻松松享受高品质生活。接下来就跟我一起动手制作吧。</p></blockquote><h1 id="材料清单"><a href="#材料清单" class="headerlink" title="材料清单:"></a>材料清单:</h1><table><thead><tr><th>所需材料</th></tr></thead><tbody><tr><td>3D打印外壳</td></tr><tr><td>Android mini pro控制器</td></tr><tr><td>RGB-LED模块</td></tr><tr><td>微动按键</td></tr><tr><td>TP4056充电模块</td></tr><tr><td>200mAh锂电池</td></tr><tr><td>细导线若干</td></tr><tr><td>自锁开关</td></tr></tbody></table><h1 id="制作过程"><a href="#制作过程" class="headerlink" title="制作过程"></a>制作过程</h1><p>1、将Arduino控制板与USB转TTL转接板连在一起然后插入电脑USB口中</p>]]></content>
+      
+      
       <categories>
-        <category>教程</category>
+          
+          <category> 教程 </category>
+          
       </categories>
-      <tags>
-        <tag>DIY</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title><![CDATA[powerFilter]]></title>
-    <url>%2F2019%2F07%2F09%2FpowerFilter%2F</url>
-    <content type="text"><![CDATA[电源滤波电容 频率范围（Hz） 电容取值 DC-100k 10uf以上钽电容或铝电解电容 100K-10M 100nf(0.1uf)陶瓷电容 10M-100M 10nf(0.01uf)陶瓷电容 &gt;100M 1nf(0.001uf)陶瓷电容和PCB的地平面与电源的平面电容 注意：电源滤波很重要，有时候电路出现异常情况查找不到原因加上电源滤波也许就能解决问题！！！]]></content>
+      
+      
+        <tags>
+            
+            <tag> DIY </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>powerFilter</title>
+      <link href="/2019/07/09/powerFilter/"/>
+      <url>/2019/07/09/powerFilter/</url>
+      
+        <content type="html"><![CDATA[<h1 id="电源滤波电容"><a href="#电源滤波电容" class="headerlink" title="电源滤波电容"></a>电源滤波电容</h1><table><thead><tr><th>频率范围（Hz）</th><th align="left">电容取值</th></tr></thead><tbody><tr><td>DC-100k</td><td align="left">10uf以上钽电容或铝电解电容</td></tr><tr><td>100K-10M</td><td align="left">100nf(0.1uf)陶瓷电容</td></tr><tr><td>10M-100M</td><td align="left">10nf(0.01uf)陶瓷电容</td></tr><tr><td>&gt;100M</td><td align="left">1nf(0.001uf)陶瓷电容和PCB的地平面与电源的平面电容</td></tr></tbody></table><p><em>注意：电源滤波很重要，有时候电路出现异常情况查找不到原因加上电源滤波也许就能解决问题！！！</em></p>]]></content>
+      
+      
       <categories>
-        <category>笔记</category>
+          
+          <category> 笔记 </category>
+          
       </categories>
-      <tags>
-        <tag>hardware</tag>
-      </tags>
-  </entry>
+      
+      
+        <tags>
+            
+            <tag> hardware </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+  
+  
 </search>
