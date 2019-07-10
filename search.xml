@@ -20,7 +20,14 @@
   <entry>
     <title><![CDATA[博客相关网站记录]]></title>
     <url>%2F2019%2F07%2F10%2F%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E8%AE%B0%E5%BD%95%2F</url>
-    <content type="text"></content>
+    <content type="text"><![CDATA[域名提供商GoDaddy 微信扫码登录，绑定qq邮箱 https://dcc.godaddy.com 域名dns管理DNSPod 微信扫码登录 https://www.dnspod.cn 网站数据统计百度统计 百度统一账号登录（手机号） https://tongji.baidu.com]]></content>
+      <categories>
+        <category>笔记</category>
+      </categories>
+      <tags>
+        <tag>DNS</tag>
+        <tag>域名</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[RGB调光小夜灯]]></title>
