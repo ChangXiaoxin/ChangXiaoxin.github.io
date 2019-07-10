@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[博客相关网站记录]]></title>
+    <url>%2F2019%2F07%2F10%2F%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E8%AE%B0%E5%BD%95%2F</url>
+    <content type="text"></content>
+  </entry>
+  <entry>
     <title><![CDATA[RGB调光小夜灯]]></title>
     <url>%2F2019%2F07%2F10%2FRGB%E8%B0%83%E5%85%89%E5%B0%8F%E5%A4%9C%E7%81%AF%2F</url>
     <content type="text"><![CDATA[许多人晚上睡觉的时候都喜欢留一盏昏黄的夜灯，在昏黄的氛围中安然睡去，享受美好的睡眠，仿佛没有了它就无法入睡，缺少安全感一样。今天我们就带领大家制作一款颜色可调的小夜灯，无论你喜欢什么颜色，它都能满足你的需求。它以arduino开源硬件为主控，通过三个按钮来控制RGB-LED的颜色，并且还有独立的可充电锂电池，可以摆脱电源线的限制，轻轻松松享受高品质生活。接下来就跟我一起动手制作吧。 材料清单: 所需材料 3D打印外壳 Android mini pro控制器 RGB-LED模块 微动按键 TP4056充电模块 200mAh锂电池 细导线若干 自锁开关 制作过程1、将Arduino控制板与USB转TTL转接板连在一起然后插入电脑USB口中]]></content>
