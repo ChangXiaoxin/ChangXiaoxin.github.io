@@ -1,3 +1,4 @@
+http://changxiaoxin.xyz/20190711/TM4c123gxl学习笔记-gpio的配置/
 http://changxiaoxin.xyz/20190711/NE5534滤波放大电路/
 http://changxiaoxin.xyz/20190711/千奇百怪的时钟/
 http://changxiaoxin.xyz/20190711/将hexo托管到github/
