@@ -1,199 +1,87 @@
 <?xml version="1.0" encoding="utf-8"?>
-<search> 
-  
-  
-    
-    <entry>
-      <title>TM4c123gxl学习笔记-gpio的配置</title>
-      <link href="/20190711/TM4c123gxl%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-gpio%E7%9A%84%E9%85%8D%E7%BD%AE/"/>
-      <url>/20190711/TM4c123gxl%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-gpio%E7%9A%84%E9%85%8D%E7%BD%AE/</url>
-      
-        <content type="html"><![CDATA[<h1 id="设置系统时钟"><a href="#设置系统时钟" class="headerlink" title="设置系统时钟"></a>设置系统时钟</h1><p>这里和stm32大致是差不多的都要先配置时钟</p><p>每一个外设都是在时钟信号的同步下进行工作的，我们首先配置系统的时钟</p><figure class="highlight 1c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Setup the system clock to run at 50 Mhz from PLL with crystal reference</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line">SysCtlClockSet(SYSCTL_SYSDIV_4<span class="string">|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN);</span></span><br></pre></td></tr></table></figure><p>上面的代码即把系统时钟配置为50Mhz</p><p>下面分析一下SysCtlClockSet()这个函数，从上面的代码中可以看出这个函数有四个参数(实际上是只有一个参数,这四个值按位取或运算得到真正的参数)</p><table><thead><tr><th>参数</th><th>意义</th><th>可选值</th></tr></thead><tbody><tr><td>SYSCTL_SYSDIV_4</td><td>时钟源频率除以4</td><td>SYSCTL_SYSDIV_1<br>~<br>SYSCTL_SYSDIV_64</td></tr><tr><td>SYSCTL_USE_PLL</td><td>启用内部PLL<br>(额定值200Mhz)</td><td>SYSCTL_USE_PLL<br>  SYSCTL_USE_OSC.</td></tr><tr><td>SYSCTL_XTAL_16MHZ</td><td>时钟参考源为16Mhz的晶振</td><td>可选值很多</td></tr><tr><td>SYSCTL_OSC_MAIN</td><td>选择主振荡器为时钟源</td><td>-</td></tr></tbody></table><p>系统在经过pll后频率会变成200Mhz，然后我们利用SYSCTL_SYSDIV_<em>对200Mhz进行分频得到我们使用的时钟频率（</em>在使用上基本上只用修改SYSCTL_SYSDIV_<em>参数</em>）</p><p>时钟频率计算公式：</p><figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">SysCtlClock</span> = <span class="number">200</span>Mhz/SYSCTL_SYSDIV_4</span><br></pre></td></tr></table></figure><p>至此系统时钟配置为50Mhz</p><h1 id="启用我们用到的gpio引脚"><a href="#启用我们用到的gpio引脚" class="headerlink" title="启用我们用到的gpio引脚"></a>启用我们用到的gpio引脚</h1><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">//</span></span><br><span class="line"><span class="regexp">//</span> Enable and wait <span class="keyword">for</span> the port to be ready <span class="keyword">for</span> access</span><br><span class="line"><span class="regexp">//</span></span><br><span class="line">SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);</span><br><span class="line"><span class="keyword">while</span>(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))</span><br><span class="line">   &#123;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure><p>SysCtlPeripheralEnable()函数就是启用外设的功能,相应的也就有SysCtlPeripheralDisable()函数对外设进行禁用。芯片上电之后，所有外设都是默认禁用状态，所以无论是我们使用gpio、i2c还是spi等外设都要先使用这个函数启用。然后等待外设打开后在进行下一步操作</p><p>与gpio有关的参数是SYSCTL_PERIPH_GPIO*,其中最后一位可以是A~F，分别代表6组gpio，每组可分别打开关闭</p><h1 id="设置gpio模式"><a href="#设置gpio模式" class="headerlink" title="设置gpio模式"></a>设置gpio模式</h1><p>关于通用gpio模式的设置只有3个函数</p><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">GPIOPinTypeGPIOInput</span><span class="params">(uint32_t ui32Port, uint8_t ui8Pins)</span></span></span><br><span class="line"><span class="comment">//设置gpio为输入模式</span></span><br><span class="line"><span class="function"><span class="title">GPIOPinTypeGPIOOutput</span><span class="params">(uint32_t ui32Port, uint8_t ui8Pins)</span></span></span><br><span class="line"><span class="comment">//设置gpio为输出模式</span></span><br><span class="line"><span class="function"><span class="title">GPIOPinTypeGPIOOutputOD</span><span class="params">(uint32_t ui32Port, uint8_t ui8Pins)</span></span></span><br><span class="line"><span class="comment">//设置gpio为开漏输出模式</span></span><br></pre></td></tr></table></figure><p>这三个函数的参数基本是类似的</p><ul><li>ui32Port : gpio地址偏移量，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio</li><li>ui8Pins : gpio的位选择，取值可以是GPIO_PIN_0~7，或者是他们的或运算，或运算代表对多个gpio同时进行操作</li></ul><h1 id="对gpio进行写操作"><a href="#对gpio进行写操作" class="headerlink" title="对gpio进行写操作"></a>对gpio进行写操作</h1><figure class="highlight cpp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GPIOPinWrite(<span class="keyword">uint32_t</span> ui32Port, <span class="keyword">uint8_t</span> ui8Pins, <span class="keyword">uint8_t</span> ui8Val)</span><br></pre></td></tr></table></figure><p>这个函数感觉很别扭，不知道为什么要用到三个参数</p><ul><li>ui32Port : 这个参数是gpio口组的选择，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio</li><li>ui8Pins : 这个参数是打开对该组中某位gpio寄存器的写保护，取值可以是GPIO_PIN_0~7，或者是他们的或运算（或运算代表对多个gpio同时进行操作）<br><br><em>为了省事可以#define GPIO_ALL 0xFF，然后所有gpio的操作都可以把这个参数改为GPIO_ALL</em></li><li>ui8Val : 这个即送入gpio寄存器的数据，当我们上一个参数使用GPIO_ALL时，这个值就是写入gpio寄存器的值，当我们需要把某位置1时，把该参数写为GPIO_PIN_x即可，同样支持或操作<br><br><em>该参数不包含的gpioPIN即置0，若想要把该组所有gpio都置0则把该参数写为0</em></li></ul><h1 id="对gpio进行读操作"><a href="#对gpio进行读操作" class="headerlink" title="对gpio进行读操作"></a>对gpio进行读操作</h1><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">GPIOPinRead</span><span class="params">(uint32_t ui32Port, uint8_t ui8Pins)</span></span></span><br></pre></td></tr></table></figure><p>读操作跟写操作类似，但是只有两个参数，因为读操作不需要对数据进行关闭写保护操作</p><ul><li>ui32Port : 这个参数是gpio口组的选择，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio</li><li>ui8Pins : 需要读取的gpioPin，取值可以是GPIO_PIN_0~7，或者是他们的或运算（或运算代表对多个gpio同时进行操作）</li></ul><p><em>注意：读操作函数是有返回值的，且为32位，但是只有7:0有效，分别对应GPIO_PIN7:GPIO_PIN_0</em></p><p>以上</p>]]></content>
-      
-      
-      
-        <tags>
-            
-            <tag> ccs </tag>
-            
-            <tag> 嵌入式 </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>NE5534滤波放大电路</title>
-      <link href="/20190711/NE5534%E6%BB%A4%E6%B3%A2%E6%94%BE%E5%A4%A7%E7%94%B5%E8%B7%AF/"/>
-      <url>/20190711/NE5534%E6%BB%A4%E6%B3%A2%E6%94%BE%E5%A4%A7%E7%94%B5%E8%B7%AF/</url>
-      
-        <content type="html"><![CDATA[<h1 id="关于NE5534"><a href="#关于NE5534" class="headerlink" title="关于NE5534"></a>关于NE5534</h1>]]></content>
-      
-      
+<search>
+  <entry>
+    <title><![CDATA[TM4c123gxl学习笔记-gpio的配置]]></title>
+    <url>%2F20190711%2FTM4c123gxl%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-gpio%E7%9A%84%E9%85%8D%E7%BD%AE%2F</url>
+    <content type="text"><![CDATA[设置系统时钟这里和stm32大致是差不多的都要先配置时钟 每一个外设都是在时钟信号的同步下进行工作的，我们首先配置系统的时钟 1234//// Setup the system clock to run at 50 Mhz from PLL with crystal reference//SysCtlClockSet(SYSCTL_SYSDIV_4|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN); 上面的代码即把系统时钟配置为50Mhz 下面分析一下SysCtlClockSet()这个函数，从上面的代码中可以看出这个函数有四个参数(实际上是只有一个参数,这四个值按位取或运算得到真正的参数) 参数 意义 可选值 SYSCTL_SYSDIV_4 时钟源频率除以4 SYSCTL_SYSDIV_1~SYSCTL_SYSDIV_64 SYSCTL_USE_PLL 启用内部PLL(额定值200Mhz) SYSCTL_USE_PLL SYSCTL_USE_OSC. SYSCTL_XTAL_16MHZ 时钟参考源为16Mhz的晶振 可选值很多 SYSCTL_OSC_MAIN 选择主振荡器为时钟源 - 系统在经过pll后频率会变成200Mhz，然后我们利用SYSCTL_SYSDIV_对200Mhz进行分频得到我们使用的时钟频率（在使用上基本上只用修改SYSCTL_SYSDIV_参数） 时钟频率计算公式： 1SysCtlClock = 200Mhz/SYSCTL_SYSDIV_4 至此系统时钟配置为50Mhz 启用我们用到的gpio引脚1234567//// Enable and wait for the port to be ready for access//SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF)) &#123; &#125; SysCtlPeripheralEnable()函数就是启用外设的功能,相应的也就有SysCtlPeripheralDisable()函数对外设进行禁用。芯片上电之后，所有外设都是默认禁用状态，所以无论是我们使用gpio、i2c还是spi等外设都要先使用这个函数启用。然后等待外设打开后在进行下一步操作 与gpio有关的参数是SYSCTL_PERIPH_GPIO*,其中最后一位可以是A~F，分别代表6组gpio，每组可分别打开关闭 设置gpio模式关于通用gpio模式的设置只有3个函数 123456GPIOPinTypeGPIOInput(uint32_t ui32Port, uint8_t ui8Pins)//设置gpio为输入模式GPIOPinTypeGPIOOutput(uint32_t ui32Port, uint8_t ui8Pins)//设置gpio为输出模式GPIOPinTypeGPIOOutputOD(uint32_t ui32Port, uint8_t ui8Pins)//设置gpio为开漏输出模式 这三个函数的参数基本是类似的 ui32Port : gpio地址偏移量，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio ui8Pins : gpio的位选择，取值可以是GPIO_PIN_0~7，或者是他们的或运算，或运算代表对多个gpio同时进行操作 对gpio进行写操作1GPIOPinWrite(uint32_t ui32Port, uint8_t ui8Pins, uint8_t ui8Val) 这个函数感觉很别扭，不知道为什么要用到三个参数 ui32Port : 这个参数是gpio口组的选择，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio ui8Pins : 这个参数是打开对该组中某位gpio寄存器的写保护，取值可以是GPIO_PIN_0~7，或者是他们的或运算（或运算代表对多个gpio同时进行操作）为了省事可以#define GPIO_ALL 0xFF，然后所有gpio的操作都可以把这个参数改为GPIO_ALL ui8Val : 这个即送入gpio寄存器的数据，当我们上一个参数使用GPIO_ALL时，这个值就是写入gpio寄存器的值，当我们需要把某位置1时，把该参数写为GPIO_PIN_x即可，同样支持或操作该参数不包含的gpioPIN即置0，若想要把该组所有gpio都置0则把该参数写为0 对gpio进行读操作1GPIOPinRead(uint32_t ui32Port, uint8_t ui8Pins) 读操作跟写操作类似，但是只有两个参数，因为读操作不需要对数据进行关闭写保护操作 ui32Port : 这个参数是gpio口组的选择，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio ui8Pins : 需要读取的gpioPin，取值可以是GPIO_PIN_0~7，或者是他们的或运算（或运算代表对多个gpio同时进行操作） 注意：读操作函数是有返回值的，且为32位，但是只有7:0有效，分别对应GPIO_PIN7:GPIO_PIN_0 以上]]></content>
+      <tags>
+        <tag>ccs</tag>
+        <tag>嵌入式</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[NE5534滤波放大电路]]></title>
+    <url>%2F20190711%2FNE5534%E6%BB%A4%E6%B3%A2%E6%94%BE%E5%A4%A7%E7%94%B5%E8%B7%AF%2F</url>
+    <content type="text"><![CDATA[关于NE5534]]></content>
       <categories>
-          
-          <category> 笔记 </category>
-          
-          <category> 模拟电路 </category>
-          
+        <category>笔记</category>
+        <category>模拟电路</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> hardware </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>千奇百怪的时钟</title>
-      <link href="/20190711/%E5%8D%83%E5%A5%87%E7%99%BE%E6%80%AA%E7%9A%84%E6%97%B6%E9%92%9F/"/>
-      <url>/20190711/%E5%8D%83%E5%A5%87%E7%99%BE%E6%80%AA%E7%9A%84%E6%97%B6%E9%92%9F/</url>
-      
-        <content type="html"><![CDATA[<blockquote><p>有时候不得不佩服那些天马行空的设计师，他们让时钟这样习以为常的物件变得充满艺术感，倘若家中摆满了这样的东西，心情想必也不会太差。</p></blockquote><p>时钟可以说是生活必不可少的物件，基本上每家每户都会有至少一个时钟来帮助我们记录时间，说起时钟的样式，大概都千篇一律，相同的大框架，换上不一样的表盘，不一样的指针，或是电子机芯，或是机械机芯，总之虽说也琳琅满目，却总会审美疲劳，缺乏创新。你是否也厌倦了客厅那款时钟，想要一台更加独特的时钟呢？接下来我就给大家分享几款奇特的闹钟，也许会让你眼前一新，为你打开新世界的大门。</p><h1 id="翻页时钟"><a href="#翻页时钟" class="headerlink" title="翻页时钟"></a>翻页时钟</h1><p><img src="https://i.postimg.cc/X7qc4c0X/1.jpg" alt></p><p>至于这款时钟到底叫什么名字也无从考究，就暂且叫他翻页时钟吧，这款时钟可以说是今天介绍的最容易获得的一款时钟了，直接某宝搜索翻页时钟就能看到。</p><p>这款时钟没有常规的表盘和指针，看起来更像是各种比赛中常用的记分板，然而它却以时间信息代替了分数，利用电机驱动做到了自动翻页，可以和普通时钟一样正常走时，但是精准度目前我还不知道，因为小编也没有用过呢，不敢妄加评测，不过新颖的翻页设计还是会让人感觉立马高端了许多呢。</p><h1 id="Plotclock"><a href="#Plotclock" class="headerlink" title="Plotclock"></a>Plotclock</h1><p><img src="https://i.postimg.cc/15d0tn9B/2.jpg" alt></p><p>这是国外一个Arduino开源项目，由三个舵机加上画臂结构构成了一个简易的机械臂，它能够用马克笔在一块压克力板上写出当前的时间，然后自己再给擦掉，继续重新写下当前的时间，如此反复不眠不休。也正是因此，这个时钟有一个非常有趣的别称“小贱钟”，知道了它的运作方式后会觉得真的是钟如其名啊。这样的时钟放在自己的书桌上，无聊的时候看看也会增添不少乐趣。目前呢这个时钟某宝是有售的，还是直接搜Plotclock就能找到，但大都需要自行组装（手残党慎入）。另外呢，如果你动手能力比较强，还可以自己打造专自己的专属定制版Plotclock哦，想要自己动手diy的朋友我已经帮忙找好了教程，复制下方链接在浏览器打开</p><blockquote><p><a href="https://www.thingiverse.com/thing:248009" target="_blank" rel="noopener">https://www.thingiverse.com/thing:248009</a></p></blockquote><h1 id="Wordclock"><a href="#Wordclock" class="headerlink" title="Wordclock"></a>Wordclock</h1><p><img src="https://i.postimg.cc/CxfGfh5g/3.jpg" alt></p><p> 这款时钟也比较有意思，而且更具现代风。它不太像时钟，它更像是一块大屏幕，它会读取当前的时间，并且把对应时间的英文单词点亮，未被点亮的字母会隐藏再黑的灯罩之下，读出显示的单词就能知道现在的时间。这样的时钟和现代风格装修的客厅很是相配，想象一下家中有好朋友来做客的时候看到这样高端的时钟，一定会赞叹不已，这足够身为客厅主人的你自豪半天了吧。然后心动的朋友们可以去某宝搜索@#￥#%,,,,打住打住，你真以为某宝什么都有啊，目前呢我还并没有发现有出售这种时钟的地方，那是不是就只能看看了呢？并不，只要你足够喜欢，并且有足够的精力和毅力，就可以靠自己的双手打造一款这样的时钟，还可以根据自己的需求更改显示内容，想要diy这款时钟的朋友可以复制下面的链接哦。</p><blockquote><p><a href="https://www.instructables.com/id/Wordclock/" target="_blank" rel="noopener">https://www.instructables.com/id/Wordclock/</a></p></blockquote><h1 id="Marble-clock"><a href="#Marble-clock" class="headerlink" title="Marble clock"></a>Marble clock</h1><p><img src="https://i.postimg.cc/0NRpYTKJ/4.jpg" alt></p><p>没错，接下来就是封面上的压轴大戏了，这款是我最喜欢的，所以放在最后讲。这款时钟通过复杂的机械结构带动小球运动，每隔一分钟这些齿轮在电机的驱动下会把一个小球抬到最上方的轨道并使其自由下滑，然后从上往下三排轨道一次是分钟、分钟、小时，第一排的每一颗小球代表着一分钟，第二排一个小球是5分钟，第三排一颗小球代表着一小时，最下面的轨道是为了储存多余的小球保证能够显示最大的时刻。每一分钟过后就有一颗小球被齿轮带上右上方的小轨道，然后在重力作用下滚入第一排轨道，然后第一排小球积满之后会全都滚下来，然后设计者通过巧妙地结构让每次只有一个小球落入第二排轨道，其他小球则全部落到最下面轨道，然后第二排到第三排的过程亦是如此。他的准确性呢，从理论上讲，只要电机转速足够稳定，那么精度还是很不错的。这么一款机械感满满的时钟绝对算得上新颖，瞬间抓住了我的心。不知道你是否也被这巧妙的设计吸引了呢？这样的一款时钟当然也是可以diy一台的，不过你得有一台3d打印机去制作出机械结构，或者可以找3d打印服务商帮忙打印。同样链接在下面</p><blockquote><p><a href="https://www.instructables.com/id/Marble-Clock/" target="_blank" rel="noopener">https://www.instructables.com/id/Marble-Clock/</a></p></blockquote><p>以上！</p>]]></content>
-      
-      
+      <tags>
+        <tag>hardware</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[千奇百怪的时钟]]></title>
+    <url>%2F20190711%2F%E5%8D%83%E5%A5%87%E7%99%BE%E6%80%AA%E7%9A%84%E6%97%B6%E9%92%9F%2F</url>
+    <content type="text"><![CDATA[有时候不得不佩服那些天马行空的设计师，他们让时钟这样习以为常的物件变得充满艺术感，倘若家中摆满了这样的东西，心情想必也不会太差。 时钟可以说是生活必不可少的物件，基本上每家每户都会有至少一个时钟来帮助我们记录时间，说起时钟的样式，大概都千篇一律，相同的大框架，换上不一样的表盘，不一样的指针，或是电子机芯，或是机械机芯，总之虽说也琳琅满目，却总会审美疲劳，缺乏创新。你是否也厌倦了客厅那款时钟，想要一台更加独特的时钟呢？接下来我就给大家分享几款奇特的闹钟，也许会让你眼前一新，为你打开新世界的大门。 翻页时钟 至于这款时钟到底叫什么名字也无从考究，就暂且叫他翻页时钟吧，这款时钟可以说是今天介绍的最容易获得的一款时钟了，直接某宝搜索翻页时钟就能看到。 这款时钟没有常规的表盘和指针，看起来更像是各种比赛中常用的记分板，然而它却以时间信息代替了分数，利用电机驱动做到了自动翻页，可以和普通时钟一样正常走时，但是精准度目前我还不知道，因为小编也没有用过呢，不敢妄加评测，不过新颖的翻页设计还是会让人感觉立马高端了许多呢。 Plotclock 这是国外一个Arduino开源项目，由三个舵机加上画臂结构构成了一个简易的机械臂，它能够用马克笔在一块压克力板上写出当前的时间，然后自己再给擦掉，继续重新写下当前的时间，如此反复不眠不休。也正是因此，这个时钟有一个非常有趣的别称“小贱钟”，知道了它的运作方式后会觉得真的是钟如其名啊。这样的时钟放在自己的书桌上，无聊的时候看看也会增添不少乐趣。目前呢这个时钟某宝是有售的，还是直接搜Plotclock就能找到，但大都需要自行组装（手残党慎入）。另外呢，如果你动手能力比较强，还可以自己打造专自己的专属定制版Plotclock哦，想要自己动手diy的朋友我已经帮忙找好了教程，复制下方链接在浏览器打开 https://www.thingiverse.com/thing:248009 Wordclock 这款时钟也比较有意思，而且更具现代风。它不太像时钟，它更像是一块大屏幕，它会读取当前的时间，并且把对应时间的英文单词点亮，未被点亮的字母会隐藏再黑的灯罩之下，读出显示的单词就能知道现在的时间。这样的时钟和现代风格装修的客厅很是相配，想象一下家中有好朋友来做客的时候看到这样高端的时钟，一定会赞叹不已，这足够身为客厅主人的你自豪半天了吧。然后心动的朋友们可以去某宝搜索@#￥#%,,,,打住打住，你真以为某宝什么都有啊，目前呢我还并没有发现有出售这种时钟的地方，那是不是就只能看看了呢？并不，只要你足够喜欢，并且有足够的精力和毅力，就可以靠自己的双手打造一款这样的时钟，还可以根据自己的需求更改显示内容，想要diy这款时钟的朋友可以复制下面的链接哦。 https://www.instructables.com/id/Wordclock/ Marble clock 没错，接下来就是封面上的压轴大戏了，这款是我最喜欢的，所以放在最后讲。这款时钟通过复杂的机械结构带动小球运动，每隔一分钟这些齿轮在电机的驱动下会把一个小球抬到最上方的轨道并使其自由下滑，然后从上往下三排轨道一次是分钟、分钟、小时，第一排的每一颗小球代表着一分钟，第二排一个小球是5分钟，第三排一颗小球代表着一小时，最下面的轨道是为了储存多余的小球保证能够显示最大的时刻。每一分钟过后就有一颗小球被齿轮带上右上方的小轨道，然后在重力作用下滚入第一排轨道，然后第一排小球积满之后会全都滚下来，然后设计者通过巧妙地结构让每次只有一个小球落入第二排轨道，其他小球则全部落到最下面轨道，然后第二排到第三排的过程亦是如此。他的准确性呢，从理论上讲，只要电机转速足够稳定，那么精度还是很不错的。这么一款机械感满满的时钟绝对算得上新颖，瞬间抓住了我的心。不知道你是否也被这巧妙的设计吸引了呢？这样的一款时钟当然也是可以diy一台的，不过你得有一台3d打印机去制作出机械结构，或者可以找3d打印服务商帮忙打印。同样链接在下面 https://www.instructables.com/id/Marble-Clock/ 以上！]]></content>
       <categories>
-          
-          <category> 奇物妙语 </category>
-          
+        <category>奇物妙语</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> DIY </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>将hexo托管到github</title>
-      <link href="/20190711/%E5%B0%86hexo%E6%89%98%E7%AE%A1%E5%88%B0github/"/>
-      <url>/20190711/%E5%B0%86hexo%E6%89%98%E7%AE%A1%E5%88%B0github/</url>
-      
-        <content type="html"><![CDATA[<blockquote><p>将hexo博客和文章源码同步到github，以便多平台同步，或者电脑文件丢失后的恢复</p></blockquote><h2 id="1、建立新的分支"><a href="#1、建立新的分支" class="headerlink" title="1、建立新的分支"></a>1、建立新的分支</h2><p>在github上存放静态网页的仓库中创建新的分支source，并将其设置为默认仓库，用来存放源码</p><h2 id="2、克隆到本地仓库"><a href="#2、克隆到本地仓库" class="headerlink" title="2、克隆到本地仓库"></a>2、克隆到本地仓库</h2><p>在hexo主目录下面克隆仓库</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$git</span> clone https:<span class="regexp">//gi</span>thub.com<span class="regexp">/changxiaoxin/</span>Changxiaoxin.github.io.git</span><br></pre></td></tr></table></figure><p>我们克隆仓库分支只是需要其中的.git管理文件，其他的网页文件是不需要的，所以进入刚刚克隆的文件夹，把.git文件夹复制到hexo主目录，然后就可以删除克隆的文件夹</p><h2 id="3、命名远程仓库"><a href="#3、命名远程仓库" class="headerlink" title="3、命名远程仓库"></a>3、命名远程仓库</h2><p>刚刚接触github，我也不知道这一步到底官方是怎么叫的，我就以自己的理解写的（有不对的地方欢迎指正）</p><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$git</span> remote git remote add origin https:<span class="regexp">//gi</span>thub.com<span class="regexp">/ChangXiaoxin/</span>ChangXiaoxin.github.io.git</span><br></pre></td></tr></table></figure><h2 id="4、向本地仓库中添加文件"><a href="#4、向本地仓库中添加文件" class="headerlink" title="4、向本地仓库中添加文件"></a>4、向本地仓库中添加文件</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$git</span> add -f .<span class="regexp">/*   /</span><span class="regexp">/加-f参数可以把全部文件都添加进来</span></span><br></pre></td></tr></table></figure><p>这样可以把hexo主目录的文件都添加进来（可能会有嵌入git仓库的提示，是因为有的插件或者主题是直接clone的git仓库，把对应的.git文件删掉就好了）</p><h2 id="5、同步到github端"><a href="#5、同步到github端" class="headerlink" title="5、同步到github端"></a>5、同步到github端</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$git</span> commit -m <span class="string">"..."</span></span><br><span class="line"><span class="variable">$git</span> push origin <span class="built_in">source</span></span><br></pre></td></tr></table></figure><p>以上代码可以把本地仓库同步到github</p><h2 id="6、博客变更操作"><a href="#6、博客变更操作" class="headerlink" title="6、博客变更操作"></a>6、博客变更操作</h2><p>每次写好文章后把文章添加同步到git仓库，然后重新部署网站</p><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta"><span class="meta-keyword">$git</span> add ./*</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">$git</span> commit -m "..."</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">$git</span> push origin source</span></span><br><span class="line"><span class="comment">//同步源码信息</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">$hexo</span> g</span></span><br><span class="line"><span class="meta"><span class="meta-keyword">$hexo</span> d</span></span><br><span class="line"><span class="comment">//重新部署静态网站</span></span><br></pre></td></tr></table></figure><p>以上</p>]]></content>
-      
-      
+      <tags>
+        <tag>DIY</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[将hexo托管到github]]></title>
+    <url>%2F20190711%2F%E5%B0%86hexo%E6%89%98%E7%AE%A1%E5%88%B0github%2F</url>
+    <content type="text"><![CDATA[将hexo博客和文章源码同步到github，以便多平台同步，或者电脑文件丢失后的恢复 1、建立新的分支在github上存放静态网页的仓库中创建新的分支source，并将其设置为默认仓库，用来存放源码 2、克隆到本地仓库在hexo主目录下面克隆仓库 1$git clone https://github.com/changxiaoxin/Changxiaoxin.github.io.git 我们克隆仓库分支只是需要其中的.git管理文件，其他的网页文件是不需要的，所以进入刚刚克隆的文件夹，把.git文件夹复制到hexo主目录，然后就可以删除克隆的文件夹 3、命名远程仓库刚刚接触github，我也不知道这一步到底官方是怎么叫的，我就以自己的理解写的（有不对的地方欢迎指正） 1$git remote git remote add origin https://github.com/ChangXiaoxin/ChangXiaoxin.github.io.git 4、向本地仓库中添加文件1$git add -f ./* //加-f参数可以把全部文件都添加进来 这样可以把hexo主目录的文件都添加进来（可能会有嵌入git仓库的提示，是因为有的插件或者主题是直接clone的git仓库，把对应的.git文件删掉就好了） 5、同步到github端12$git commit -m "..."$git push origin source 以上代码可以把本地仓库同步到github 6、博客变更操作每次写好文章后把文章添加同步到git仓库，然后重新部署网站 1234567$git add ./*$git commit -m "..."$git push origin source//同步源码信息$hexo g$hexo d//重新部署静态网站 以上]]></content>
       <categories>
-          
-          <category> 笔记 </category>
-          
+        <category>笔记</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> hexo </tag>
-            
-            <tag> github </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>test</title>
-      <link href="/20190710/test/"/>
-      <url>/20190710/test/</url>
-      
-        <content type="html"><![CDATA[<h3 id="本条消息使用手机编辑"><a href="#本条消息使用手机编辑" class="headerlink" title="本条消息使用手机编辑"></a>本条消息使用手机编辑</h3>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>博客相关网站记录</title>
-      <link href="/20190710/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E8%AE%B0%E5%BD%95/"/>
-      <url>/20190710/%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E8%AE%B0%E5%BD%95/</url>
-      
-        <content type="html"><![CDATA[<h2 id="域名提供商"><a href="#域名提供商" class="headerlink" title="域名提供商"></a>域名提供商</h2><p>GoDaddy 微信扫码登录，绑定qq邮箱</p><blockquote><p><a href="https://dcc.godaddy.com" target="_blank" rel="noopener">https://dcc.godaddy.com</a></p></blockquote><h2 id="域名dns管理"><a href="#域名dns管理" class="headerlink" title="域名dns管理"></a>域名dns管理</h2><p>DNSPod 微信扫码登录</p><blockquote><p><a href="https://www.dnspod.cn" target="_blank" rel="noopener">https://www.dnspod.cn</a></p></blockquote><h2 id="网站数据统计"><a href="#网站数据统计" class="headerlink" title="网站数据统计"></a>网站数据统计</h2><p>百度统计 百度统一账号登录（手机号）</p><blockquote><p><a href="https://tongji.baidu.com" target="_blank" rel="noopener">https://tongji.baidu.com</a></p></blockquote><h2 id="在线图床"><a href="#在线图床" class="headerlink" title="在线图床"></a>在线图床</h2><blockquote><p><a href="https://share1223.com/free.html" target="_blank" rel="noopener">https://share1223.com/free.html</a></p></blockquote><p>postimage 这个图床挺好的，就是生成的链接还得修改一下麻烦</p><blockquote><p><a href="https://postimages.org/" target="_blank" rel="noopener">https://postimages.org/</a></p></blockquote><h2 id="评论模块"><a href="#评论模块" class="headerlink" title="评论模块"></a>评论模块</h2><p>Valine qq邮箱登录</p><blockquote><p><a href="https://console.leancloud.app" target="_blank" rel="noopener">https://console.leancloud.app</a></p></blockquote>]]></content>
-      
-      
+      <tags>
+        <tag>hexo</tag>
+        <tag>github</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[test]]></title>
+    <url>%2F20190710%2Ftest%2F</url>
+    <content type="text"><![CDATA[本条消息使用手机编辑]]></content>
+  </entry>
+  <entry>
+    <title><![CDATA[博客相关网站记录]]></title>
+    <url>%2F20190710%2F%E5%8D%9A%E5%AE%A2%E7%9B%B8%E5%85%B3%E7%BD%91%E7%AB%99%E8%AE%B0%E5%BD%95%2F</url>
+    <content type="text"><![CDATA[域名提供商GoDaddy 微信扫码登录，绑定qq邮箱 https://dcc.godaddy.com 域名dns管理DNSPod 微信扫码登录 https://www.dnspod.cn 网站数据统计百度统计 百度统一账号登录（手机号） https://tongji.baidu.com 在线图床 https://share1223.com/free.html postimage 这个图床挺好的，就是生成的链接还得修改一下麻烦 https://postimages.org/ 评论模块Valine qq邮箱登录 https://console.leancloud.app]]></content>
       <categories>
-          
-          <category> 笔记 </category>
-          
+        <category>笔记</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> DNS </tag>
-            
-            <tag> 域名 </tag>
-            
-            <tag> hexo </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>RGB调光小夜灯</title>
-      <link href="/20190710/RGB%E8%B0%83%E5%85%89%E5%B0%8F%E5%A4%9C%E7%81%AF/"/>
-      <url>/20190710/RGB%E8%B0%83%E5%85%89%E5%B0%8F%E5%A4%9C%E7%81%AF/</url>
-      
-        <content type="html"><![CDATA[<blockquote><p>许多人晚上睡觉的时候都喜欢留一盏昏黄的夜灯，在昏黄的氛围中安然睡去，享受美好的睡眠，仿佛没有了它就无法入睡，缺少安全感一样。今天我们就带领大家制作一款颜色可调的小夜灯，无论你喜欢什么颜色，它都能满足你的需求。它以arduino开源硬件为主控，通过三个按钮来控制RGB-LED的颜色，并且还有独立的可充电锂电池，可以摆脱电源线的限制，轻轻松松享受高品质生活。接下来就跟我一起动手制作吧。</p></blockquote><table><thead><tr><th>所需材料</th></tr></thead><tbody><tr><td>3D打印外壳</td></tr><tr><td>Android mini pro控制器</td></tr><tr><td>RGB-LED模块</td></tr><tr><td>微动按键</td></tr><tr><td>TP4056充电模块</td></tr><tr><td>200mAh锂电池</td></tr><tr><td>细导线若干</td></tr><tr><td>自锁开关</td></tr></tbody></table><p><a href="https://postimg.cc/BLsvRTrr" target="_blank" rel="noopener"><img src="https://i.postimg.cc/0QKJMZcy/qq-pic-merged-1558693682734.jpg" alt></a></p><p>连接示意图：</p><p><a href="https://postimg.cc/t7vXzGgQ" target="_blank" rel="noopener"><img src="https://i.postimg.cc/FsN7N95R/2.png" alt></a></p><h1 id="制作过程"><a href="#制作过程" class="headerlink" title="制作过程"></a>制作过程</h1><h2 id="1、将Arduino控制板与USB转TTL转接板连在一起然后插入电脑USB口中，连接方式如下"><a href="#1、将Arduino控制板与USB转TTL转接板连在一起然后插入电脑USB口中，连接方式如下" class="headerlink" title="1、将Arduino控制板与USB转TTL转接板连在一起然后插入电脑USB口中，连接方式如下"></a>1、将Arduino控制板与USB转TTL转接板连在一起然后插入电脑USB口中，连接方式如下</h2><table><thead><tr><th>Arduino控制板</th><th>USB转TTL</th></tr></thead><tbody><tr><td>VCC</td><td>VCC</td></tr><tr><td>GND</td><td>GND</td></tr><tr><td>RXD</td><td>TXD</td></tr><tr><td>TXD</td><td>RXD</td></tr></tbody></table><p><em>注意：arduino与USB转TTL的RXD、TXD连接方式</em></p><p><img src="https://i.postimg.cc/CK3xt0sw/IMG-20190524-145209.jpg" alt></p><h2 id="2、将下载好的RGB程序下载到Arduino控制扳里"><a href="#2、将下载好的RGB程序下载到Arduino控制扳里" class="headerlink" title="2、将下载好的RGB程序下载到Arduino控制扳里"></a>2、将下载好的RGB程序下载到Arduino控制扳里</h2><p>首先在Arduino IDE里打开程序，点击工具选择板卡（Arduino Nano）和端口<br>然后点击代码框上方向右箭头即可自动编译上传代码（当编译完成，代码框下面出现上传字样时按下Arduino控制板上的复位按钮即可下载，这一步可能会不成功，多试几次就行了）</p><p>下载成功后IDE显示如下：</p><p><a href="https://postimg.cc/hQvKqpp5" target="_blank" rel="noopener"><img src="https://i.postimg.cc/QCkC1z5h/3.png" alt></a></p><h2 id="3、焊接RGB-LED灯"><a href="#3、焊接RGB-LED灯" class="headerlink" title="3、焊接RGB-LED灯"></a>3、焊接RGB-LED灯</h2><p><img src="https://i.postimg.cc/xdJdt8Hs/IMG-20190524-185808.jpg" alt></p><h2 id="4、焊接按键"><a href="#4、焊接按键" class="headerlink" title="4、焊接按键"></a>4、焊接按键</h2><p><img src="https://i.postimg.cc/L80XtLqY/IMG-20190524-191513.jpg" alt></p><h2 id="5、焊接电池和充电板"><a href="#5、焊接电池和充电板" class="headerlink" title="5、焊接电池和充电板"></a>5、焊接电池和充电板</h2><p><img src="https://i.postimg.cc/8P4sCqNb/IMG-20190524-191835.jpg" alt></p><h2 id="6、焊接开关"><a href="#6、焊接开关" class="headerlink" title="6、焊接开关"></a>6、焊接开关</h2><p><img src="https://i.postimg.cc/WpMhBdyC/IMG-20190524-193703.jpg" alt></p><h2 id="7、功能测试"><a href="#7、功能测试" class="headerlink" title="7、功能测试"></a>7、功能测试</h2><p><img src="https://i.postimg.cc/63Zy5qp7/IMG-20190524-193846.jpg" alt></p><p><img src="https://i.postimg.cc/t4RZt92f/IMG-20190524-193908.jpg" alt></p><p><img src="https://i.postimg.cc/GhxTy4JG/IMG-20190524-193918.jpg" alt></p><h2 id="8、装进外壳"><a href="#8、装进外壳" class="headerlink" title="8、装进外壳"></a>8、装进外壳</h2><p><img src="https://i.postimg.cc/7ZBCKjRL/IMG-20190524-200108.jpg" alt></p><p><img src="https://i.postimg.cc/WbvJzGrs/IMG-20190524-200508.jpg" alt></p><p><img src="https://i.postimg.cc/RCfHvsWP/IMG-20190524-200754.jpg" alt></p><h2 id="9、最终成果"><a href="#9、最终成果" class="headerlink" title="9、最终成果"></a>9、最终成果</h2><p><img src="https://i.postimg.cc/zfVy60mF/IMG-20190524-200951.jpg" alt></p><p><img src="https://i.postimg.cc/cJ2vSw0y/IMG-20190524-201057.jpg" alt></p><p><img src="https://i.postimg.cc/T185rm4q/IMG-20190524-201142.jpg" alt></p><h1 id="写在最后"><a href="#写在最后" class="headerlink" title="写在最后"></a>写在最后</h1><p><em>这个小夜灯是可充电设计，底部有micro-usb口，可以用安卓数据线进行充电。底部还有三个黑色按键和一个开关，开关控制小夜灯的开启和关闭；中间的黑色按键为颜色切换功能，按一次切换一个颜色（红蓝绿循环切换），左边和右边的按键可以调节已选颜色的亮度，通过三种颜色不同亮度的组合来选择不同的颜色。而且此小夜灯具有颜色记忆功能，下一次开启时自动切换到上一次关闭时的颜色状态。</em></p><h1 id="源代码"><a href="#源代码" class="headerlink" title="源代码"></a>源代码</h1><figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span><span class="meta-string">&lt;EEPROM.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PIN_RED 9 <span class="comment">//定义红色接口</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PIN_GREEN 10 <span class="comment">//定义绿色接口</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> PIN_BLUE 11 <span class="comment">//定义蓝色接口</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> button_inc 8 <span class="comment">//定义按键</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> button_shift 7</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> button_dec 6</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> red = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> green = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> blue = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> keyflag = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> keycounter_inc = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> keycounter_shift = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> keycounter_dec = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> color_set = <span class="number">1</span>;</span><br><span class="line"><span class="keyword">int</span> key_inc = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> key_shift = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> key_dec = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">int</span> key_value_old = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">long</span> timer = <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> <span class="built_in">setup</span>() &#123;</span><br><span class="line">  <span class="comment">// put your setup code here, to run once:</span></span><br><span class="line">    <span class="built_in">pinMode</span>(PIN_RED, <span class="literal">OUTPUT</span>);</span><br><span class="line">    <span class="built_in">pinMode</span>(PIN_GREEN, <span class="literal">OUTPUT</span>);</span><br><span class="line">    <span class="built_in">pinMode</span>(PIN_BLUE, <span class="literal">OUTPUT</span>);</span><br><span class="line">    <span class="built_in">pinMode</span>(button_inc,<span class="literal">INPUT_PULLUP</span>); <span class="comment">//初始化按键</span></span><br><span class="line">    <span class="built_in">pinMode</span>(button_shift,<span class="literal">INPUT_PULLUP</span>); <span class="comment">//初始化按键</span></span><br><span class="line">    <span class="built_in">pinMode</span>(button_dec,<span class="literal">INPUT_PULLUP</span>); <span class="comment">//初始化按键</span></span><br><span class="line">    red = <span class="built_in">EEPROM</span>.<span class="built_in">read</span>(<span class="number">1</span>);</span><br><span class="line">    green = <span class="built_in">EEPROM</span>.<span class="built_in">read</span>(<span class="number">2</span>);</span><br><span class="line">    blue = <span class="built_in">EEPROM</span>.<span class="built_in">read</span>(<span class="number">3</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> keyscan()&#123;<span class="comment">//按键扫描程序</span></span><br><span class="line">    keyflag = <span class="number">0</span>; <span class="comment">//清空按键扫描标志</span></span><br><span class="line">    <span class="built_in">if</span>(<span class="built_in">digitalRead</span>(button_inc) == <span class="literal">LOW</span>)&#123; <span class="comment">//检测按键按下</span></span><br><span class="line">    keycounter_inc++; <span class="comment">//软件消抖</span></span><br><span class="line">        <span class="built_in">if</span>(keycounter_inc &gt;= <span class="number">150</span>)&#123;<span class="comment">//消抖之后改变按键值</span></span><br><span class="line">            key_inc = <span class="number">1</span>;</span><br><span class="line">            keycounter_inc = <span class="number">0</span>; <span class="comment">//清空消抖计时</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">if</span>(<span class="built_in">digitalRead</span>(button_shift) == <span class="literal">LOW</span>)&#123; <span class="comment">//检测按键按下</span></span><br><span class="line">        keycounter_shift++; <span class="comment">//软件消抖</span></span><br><span class="line">        <span class="built_in">if</span>(keycounter_shift &gt;= <span class="number">150</span>)&#123;<span class="comment">//消抖之后改变按键值</span></span><br><span class="line">            key_shift = <span class="number">1</span>;</span><br><span class="line">            keycounter_shift = <span class="number">0</span>; <span class="comment">//清空消抖计时</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">if</span>(<span class="built_in">digitalRead</span>(button_dec) == <span class="literal">LOW</span>)&#123; <span class="comment">//检测按键按下</span></span><br><span class="line">        keycounter_dec++; <span class="comment">//软件消抖</span></span><br><span class="line">        <span class="built_in">if</span>(keycounter_dec &gt;= <span class="number">150</span>)&#123;<span class="comment">//消抖之后改变按键值</span></span><br><span class="line">            key_dec = <span class="number">1</span>;</span><br><span class="line">            keycounter_dec = <span class="number">0</span>; <span class="comment">//清空消抖计时</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> &#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> colorRGB(<span class="keyword">int</span> r,<span class="keyword">int</span> g,<span class="keyword">int</span> b)&#123;</span><br><span class="line">    <span class="built_in">analogWrite</span>(PIN_RED,r);</span><br><span class="line">    <span class="built_in">analogWrite</span>(PIN_GREEN,g);</span><br><span class="line">    <span class="built_in">analogWrite</span>(PIN_BLUE,b);  </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> keydo()&#123;</span><br><span class="line">    <span class="built_in">if</span>(key_inc == <span class="number">1</span>)&#123;</span><br><span class="line">        key_inc = <span class="number">0</span>;</span><br><span class="line">        <span class="built_in">switch</span>(color_set)&#123;</span><br><span class="line">            <span class="built_in">case</span> <span class="number">1</span>:red = red + <span class="number">25</span>;<span class="built_in">if</span>(red &gt; <span class="number">225</span>)red = <span class="number">0</span>;<span class="built_in">break</span>;</span><br><span class="line">            <span class="built_in">case</span> <span class="number">2</span>:green = green + <span class="number">25</span>;<span class="built_in">if</span>(green &gt; <span class="number">225</span>)green = <span class="number">0</span>;<span class="built_in">break</span>;</span><br><span class="line">            <span class="built_in">case</span> <span class="number">3</span>:blue = blue + <span class="number">25</span>;<span class="built_in">if</span>(blue &gt; <span class="number">225</span>)blue = <span class="number">0</span>;<span class="built_in">break</span>;</span><br><span class="line">            <span class="built_in">default</span>:<span class="built_in">break</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">if</span>(key_shift == <span class="number">1</span>)&#123;</span><br><span class="line">        key_shift = <span class="number">0</span>;</span><br><span class="line">        color_set++;</span><br><span class="line">        <span class="built_in">if</span>(color_set &gt;= <span class="number">4</span>)color_set = <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"><span class="built_in">if</span>(key_dec == <span class="number">1</span>)&#123;</span><br><span class="line">    key_dec = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">switch</span>(color_set)&#123;</span><br><span class="line">        <span class="built_in">case</span> <span class="number">1</span>:red = red - <span class="number">25</span>;<span class="built_in">if</span>(red &lt; <span class="number">0</span>)red = <span class="number">255</span>;<span class="built_in">break</span>;</span><br><span class="line">        <span class="built_in">case</span> <span class="number">2</span>:green = green - <span class="number">25</span>;<span class="built_in">if</span>(green &lt; <span class="number">0</span>)green = <span class="number">255</span>;<span class="built_in">break</span>;</span><br><span class="line">        <span class="built_in">case</span> <span class="number">3</span>:blue = blue - <span class="number">25</span>;<span class="built_in">if</span>(blue &lt; <span class="number">0</span>)blue = <span class="number">255</span>;<span class="built_in">break</span>;</span><br><span class="line">        <span class="built_in">default</span>:<span class="built_in">break</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line">colorRGB(red,green,blue);</span><br><span class="line"><span class="built_in">EEPROM</span>.<span class="built_in">write</span>(<span class="number">1</span>,red);</span><br><span class="line"><span class="built_in">EEPROM</span>.<span class="built_in">write</span>(<span class="number">2</span>,green);</span><br><span class="line"><span class="built_in">EEPROM</span>.<span class="built_in">write</span>(<span class="number">3</span>,blue);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> <span class="built_in">loop</span>() &#123;</span><br><span class="line"><span class="comment">// put your main code here, to run repeatedly:</span></span><br><span class="line"><span class="built_in">if</span>(<span class="built_in">millis</span>() - timer &gt;= <span class="number">1</span>)&#123;</span><br><span class="line">    timer = <span class="built_in">millis</span>();</span><br><span class="line">    keyflag++;</span><br><span class="line">    keycounter_inc++;</span><br><span class="line">    keycounter_shift++;</span><br><span class="line">    keycounter_dec++;</span><br><span class="line">    <span class="built_in">if</span> (keyflag &gt;= <span class="number">1</span>)keyscan(); <span class="comment">//按键扫描程序，扫描间隔1ms</span></span><br><span class="line">&#125;</span><br><span class="line">keydo();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure><p>以上</p>]]></content>
-      
-      
+      <tags>
+        <tag>DNS</tag>
+        <tag>域名</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[RGB调光小夜灯]]></title>
+    <url>%2F20190710%2FRGB%E8%B0%83%E5%85%89%E5%B0%8F%E5%A4%9C%E7%81%AF%2F</url>
+    <content type="text"><![CDATA[许多人晚上睡觉的时候都喜欢留一盏昏黄的夜灯，在昏黄的氛围中安然睡去，享受美好的睡眠，仿佛没有了它就无法入睡，缺少安全感一样。今天我们就带领大家制作一款颜色可调的小夜灯，无论你喜欢什么颜色，它都能满足你的需求。它以arduino开源硬件为主控，通过三个按钮来控制RGB-LED的颜色，并且还有独立的可充电锂电池，可以摆脱电源线的限制，轻轻松松享受高品质生活。接下来就跟我一起动手制作吧。 所需材料 3D打印外壳 Android mini pro控制器 RGB-LED模块 微动按键 TP4056充电模块 200mAh锂电池 细导线若干 自锁开关 连接示意图： 制作过程1、将Arduino控制板与USB转TTL转接板连在一起然后插入电脑USB口中，连接方式如下 Arduino控制板 USB转TTL VCC VCC GND GND RXD TXD TXD RXD 注意：arduino与USB转TTL的RXD、TXD连接方式 2、将下载好的RGB程序下载到Arduino控制扳里首先在Arduino IDE里打开程序，点击工具选择板卡（Arduino Nano）和端口然后点击代码框上方向右箭头即可自动编译上传代码（当编译完成，代码框下面出现上传字样时按下Arduino控制板上的复位按钮即可下载，这一步可能会不成功，多试几次就行了） 下载成功后IDE显示如下： 3、焊接RGB-LED灯 4、焊接按键 5、焊接电池和充电板 6、焊接开关 7、功能测试 8、装进外壳 9、最终成果 写在最后这个小夜灯是可充电设计，底部有micro-usb口，可以用安卓数据线进行充电。底部还有三个黑色按键和一个开关，开关控制小夜灯的开启和关闭；中间的黑色按键为颜色切换功能，按一次切换一个颜色（红蓝绿循环切换），左边和右边的按键可以调节已选颜色的亮度，通过三种颜色不同亮度的组合来选择不同的颜色。而且此小夜灯具有颜色记忆功能，下一次开启时自动切换到上一次关闭时的颜色状态。 源代码123456789101112131415161718192021222324252627282930313233343536373839404142434445464748495051525354555657585960616263646566676869707172737475767778798081828384858687888990919293949596979899100101102103104105106107108109110111#include&lt;EEPROM.h&gt;#define PIN_RED 9 //定义红色接口#define PIN_GREEN 10 //定义绿色接口#define PIN_BLUE 11 //定义蓝色接口#define button_inc 8 //定义按键#define button_shift 7#define button_dec 6int red = 0;int green = 0;int blue = 0;int keyflag = 0;int keycounter_inc = 0;int keycounter_shift = 0;int keycounter_dec = 0;int color_set = 1;int key_inc = 0;int key_shift = 0;int key_dec = 0;int key_value_old = 0;long timer = 0;void setup() &#123; // put your setup code here, to run once: pinMode(PIN_RED, OUTPUT); pinMode(PIN_GREEN, OUTPUT); pinMode(PIN_BLUE, OUTPUT); pinMode(button_inc,INPUT_PULLUP); //初始化按键 pinMode(button_shift,INPUT_PULLUP); //初始化按键 pinMode(button_dec,INPUT_PULLUP); //初始化按键 red = EEPROM.read(1); green = EEPROM.read(2); blue = EEPROM.read(3);&#125;void keyscan()&#123;//按键扫描程序 keyflag = 0; //清空按键扫描标志 if(digitalRead(button_inc) == LOW)&#123; //检测按键按下 keycounter_inc++; //软件消抖 if(keycounter_inc &gt;= 150)&#123;//消抖之后改变按键值 key_inc = 1; keycounter_inc = 0; //清空消抖计时 &#125; &#125; if(digitalRead(button_shift) == LOW)&#123; //检测按键按下 keycounter_shift++; //软件消抖 if(keycounter_shift &gt;= 150)&#123;//消抖之后改变按键值 key_shift = 1; keycounter_shift = 0; //清空消抖计时 &#125; &#125; if(digitalRead(button_dec) == LOW)&#123; //检测按键按下 keycounter_dec++; //软件消抖 if(keycounter_dec &gt;= 150)&#123;//消抖之后改变按键值 key_dec = 1; keycounter_dec = 0; //清空消抖计时 &#125; &#125; &#125;void colorRGB(int r,int g,int b)&#123; analogWrite(PIN_RED,r); analogWrite(PIN_GREEN,g); analogWrite(PIN_BLUE,b); &#125;void keydo()&#123; if(key_inc == 1)&#123; key_inc = 0; switch(color_set)&#123; case 1:red = red + 25;if(red &gt; 225)red = 0;break; case 2:green = green + 25;if(green &gt; 225)green = 0;break; case 3:blue = blue + 25;if(blue &gt; 225)blue = 0;break; default:break; &#125; &#125; if(key_shift == 1)&#123; key_shift = 0; color_set++; if(color_set &gt;= 4)color_set = 1; &#125;if(key_dec == 1)&#123; key_dec = 0; switch(color_set)&#123; case 1:red = red - 25;if(red &lt; 0)red = 255;break; case 2:green = green - 25;if(green &lt; 0)green = 255;break; case 3:blue = blue - 25;if(blue &lt; 0)blue = 255;break; default:break; &#125;&#125;colorRGB(red,green,blue);EEPROM.write(1,red);EEPROM.write(2,green);EEPROM.write(3,blue);&#125;void loop() &#123;// put your main code here, to run repeatedly:if(millis() - timer &gt;= 1)&#123; timer = millis(); keyflag++; keycounter_inc++; keycounter_shift++; keycounter_dec++; if (keyflag &gt;= 1)keyscan(); //按键扫描程序，扫描间隔1ms&#125;keydo();&#125; 以上]]></content>
       <categories>
-          
-          <category> 教程 </category>
-          
+        <category>教程</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> DIY </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>powerFilter</title>
-      <link href="/20190709/powerFilter/"/>
-      <url>/20190709/powerFilter/</url>
-      
-        <content type="html"><![CDATA[<h1 id="电源滤波电容"><a href="#电源滤波电容" class="headerlink" title="电源滤波电容"></a>电源滤波电容</h1><table><thead><tr><th>频率范围（Hz）</th><th align="left">电容取值</th></tr></thead><tbody><tr><td>DC-100k</td><td align="left">10uf以上钽电容或铝电解电容</td></tr><tr><td>100K-10M</td><td align="left">100nf(0.1uf)陶瓷电容</td></tr><tr><td>10M-100M</td><td align="left">10nf(0.01uf)陶瓷电容</td></tr><tr><td>&gt;100M</td><td align="left">1nf(0.001uf)陶瓷电容和PCB的地平面与电源的平面电容</td></tr></tbody></table><p><em>注意：电源滤波很重要，有时候电路出现异常情况查找不到原因加上电源滤波也许就能解决问题！！！</em></p>]]></content>
-      
-      
+      <tags>
+        <tag>DIY</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title><![CDATA[powerFilter]]></title>
+    <url>%2F20190709%2FpowerFilter%2F</url>
+    <content type="text"><![CDATA[电源滤波电容 频率范围（Hz） 电容取值 DC-100k 10uf以上钽电容或铝电解电容 100K-10M 100nf(0.1uf)陶瓷电容 10M-100M 10nf(0.01uf)陶瓷电容 &gt;100M 1nf(0.001uf)陶瓷电容和PCB的地平面与电源的平面电容 注意：电源滤波很重要，有时候电路出现异常情况查找不到原因加上电源滤波也许就能解决问题！！！]]></content>
       <categories>
-          
-          <category> 笔记 </category>
-          
+        <category>笔记</category>
       </categories>
-      
-      
-        <tags>
-            
-            <tag> hardware </tag>
-            
-        </tags>
-      
-    </entry>
-    
-    
-  
-  
+      <tags>
+        <tag>hardware</tag>
+      </tags>
+  </entry>
 </search>
