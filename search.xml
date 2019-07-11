@@ -3,7 +3,14 @@
   <entry>
     <title><![CDATA[NE5534滤波放大电路]]></title>
     <url>%2F20190711%2FNE5534%E6%BB%A4%E6%B3%A2%E6%94%BE%E5%A4%A7%E7%94%B5%E8%B7%AF%2F</url>
-    <content type="text"></content>
+    <content type="text"><![CDATA[关于NE5534]]></content>
+      <categories>
+        <category>笔记</category>
+        <category>模拟电路</category>
+      </categories>
+      <tags>
+        <tag>hardware</tag>
+      </tags>
   </entry>
   <entry>
     <title><![CDATA[千奇百怪的时钟]]></title>
