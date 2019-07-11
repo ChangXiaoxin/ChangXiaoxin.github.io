@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="第四界">
 <meta property="og:description" content="使用ccs配置TM4c123gxl的gpio引脚">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-07-11T15:29:17.718Z">
+<meta property="og:updated_time" content="2019-07-11T15:35:59.618Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="TM4c123gxl学习笔记-gpio的配置">
 <meta name="twitter:description" content="使用ccs配置TM4c123gxl的gpio引脚">
@@ -433,7 +433,7 @@
                 
               
 
-              <time title="创建时间：2019-07-11 21:49:13 / 修改时间：23:29:17" itemprop="dateCreated datePublished" datetime="2019-07-11T21:49:13+08:00">2019-07-11</time>
+              <time title="创建时间：2019-07-11 21:49:13 / 修改时间：23:35:59" itemprop="dateCreated datePublished" datetime="2019-07-11T21:49:13+08:00">2019-07-11</time>
             </span>
           
 
@@ -540,7 +540,7 @@
 <td>-</td>
 </tr>
 </tbody></table>
-<p>系统在经过pll后频率会变成200Mhz，然后我们利用SYSCTL_SYSDIV_<em>对200Mhz进行分频得到我们使用的时钟频率（</em>在使用上基本上只用修改SYSCTL_SYSDIV_<em>参数</em>）</p>
+<p>系统在经过pll后频率会变成200Mhz，然后我们利用SYSCTL_SYSDIV_x对200Mhz进行分频得到我们使用的时钟频率（<em>在使用上基本上只用修改SYSCTL_SYSDIV_x参数</em>）</p>
 <p>时钟频率计算公式：</p>
 <figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">SysCtlClock</span> = <span class="number">200</span>Mhz/SYSCTL_SYSDIV_4</span><br></pre></td></tr></table></figure>
 
@@ -548,7 +548,7 @@
 <h1 id="启用我们用到的gpio引脚"><a href="#启用我们用到的gpio引脚" class="headerlink" title="启用我们用到的gpio引脚"></a>启用我们用到的gpio引脚</h1><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="regexp">//</span></span><br><span class="line"><span class="regexp">//</span> Enable and wait <span class="keyword">for</span> the port to be ready <span class="keyword">for</span> access</span><br><span class="line"><span class="regexp">//</span></span><br><span class="line">SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);</span><br><span class="line"><span class="keyword">while</span>(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))</span><br><span class="line">   &#123;</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
 
 <p>SysCtlPeripheralEnable()函数就是启用外设的功能,相应的也就有SysCtlPeripheralDisable()函数对外设进行禁用。芯片上电之后，所有外设都是默认禁用状态，所以无论是我们使用gpio、i2c还是spi等外设都要先使用这个函数启用。然后等待外设打开后在进行下一步操作</p>
-<p>与gpio有关的参数是SYSCTL_PERIPH_GPIO*,其中最后一位可以是A~F，分别代表6组gpio，每组可分别打开关闭</p>
+<p>与gpio有关的参数是SYSCTL_PERIPH_GPIOx,其中最后一位可以是A~F，分别代表6组gpio，每组可分别打开关闭</p>
 <h1 id="设置gpio模式"><a href="#设置gpio模式" class="headerlink" title="设置gpio模式"></a>设置gpio模式</h1><p>关于通用gpio模式的设置只有3个函数</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="title">GPIOPinTypeGPIOInput</span><span class="params">(uint32_t ui32Port, uint8_t ui8Pins)</span></span></span><br><span class="line"><span class="comment">//设置gpio为输入模式</span></span><br><span class="line"><span class="function"><span class="title">GPIOPinTypeGPIOOutput</span><span class="params">(uint32_t ui32Port, uint8_t ui8Pins)</span></span></span><br><span class="line"><span class="comment">//设置gpio为输出模式</span></span><br><span class="line"><span class="function"><span class="title">GPIOPinTypeGPIOOutputOD</span><span class="params">(uint32_t ui32Port, uint8_t ui8Pins)</span></span></span><br><span class="line"><span class="comment">//设置gpio为开漏输出模式</span></span><br></pre></td></tr></table></figure>
 
