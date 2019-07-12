@@ -1855,7 +1855,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #5e67f0;
+  background: #b6ff81;
 }
 .feed-link,
 .chat {
@@ -3128,7 +3128,7 @@ body {
 }
 @media screen and (min-width: 1200px) {
   body {
-    background-image: url("/images/bg2.jpg");
+    background-image: url("https://i.postimg.cc/rygBM4PH/bg2.jpg");
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-position: 50% 50%;
