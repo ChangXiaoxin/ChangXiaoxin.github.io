@@ -1855,7 +1855,7 @@ pre .javascript .function {
   width: 4px;
   height: 4px;
   border-radius: 50%;
-  background: #ffddc1;
+  background: #c9b93c;
 }
 .feed-link,
 .chat {
@@ -2042,10 +2042,13 @@ pre .javascript .function {
 .footer-inner {
   text-align: center;
 }
+#animate {
+  animation: iconAnimate 1.33s ease-in-out infinite;
+}
 .with-love {
   display: inline-block;
   margin: 0 5px;
-  color: #808080;
+  color: #FF0000;
 }
 .powered-by,
 .theme-info {
@@ -3172,5 +3175,67 @@ body {
   border-bottom: none;
 }
 .post-body a:hover {
+  color: #fc6423;
+}
+.posts-expand .post-meta {
+  margin: 3px 0 60px 0;
+  color: #bc8042;
+  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 12px;
+  text-align: center;
+}
+a,
+span.exturl {
+  overflow-wrap: break-word;
+  overflow-wrap: break-word;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  background-color: transparent;
+  color: #fc6423;
+  text-decoration: none;
+  outline: none;
+  border-bottom: 1px solid #f00;
+  cursor: pointer;
+}
+body {
+  position: relative;
+  font-family: 'Lato', "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 14px;
+  line-height: 2;
+  color: #fc6423;
+}
+.posts-expand .post-title-link {
+  color: #fc6423;
+}
+.footer {
+  font-size: 14px;
+  color: #fc6423;
+}
+.site-author-name {
+  margin: 0;
+  text-align: center;
+  color: #ea662e;
+  font-weight: 600;
+}
+.site-meta {
+  padding: 20px 0;
+  color: #f0f0f0;
+  background: rgba(255,255,255,0.9);
+}
+.site-title {
+  font-size: 25px;
+  color: #fc6423;
+}
+.site-subtitle {
+  color: #fc6423;
+}
+.sidebar-inner {
+  color: #fc6423;
+}
+.site-description {
+  color: #fc6423;
+}
+.site-state-item-name {
+  font-size: 13px;
   color: #fc6423;
 }
