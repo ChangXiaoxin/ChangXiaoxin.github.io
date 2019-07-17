@@ -39,7 +39,7 @@
   <entry>
     <title><![CDATA[将hexo托管到github]]></title>
     <url>%2F20190711%2F%E5%B0%86hexo%E6%89%98%E7%AE%A1%E5%88%B0github%2F</url>
-    <content type="text"><![CDATA[将hexo博客和文章源码同步到github，以便多平台同步，或者电脑文件丢失后的恢复 1、建立新的分支在github上存放静态网页的仓库中创建新的分支source，并将其设置为默认仓库，用来存放源码 2、克隆到本地仓库在hexo主目录下面克隆仓库 1$git clone https://github.com/changxiaoxin/Changxiaoxin.github.io.git 我们克隆仓库分支只是需要其中的.git管理文件，其他的网页文件是不需要的，所以进入刚刚克隆的文件夹，把.git文件夹复制到hexo主目录，然后就可以删除克隆的文件夹 3、命名远程仓库刚刚接触github，我也不知道这一步到底官方是怎么叫的，我就以自己的理解写的（有不对的地方欢迎指正） 1$git remote git remote add origin https://github.com/ChangXiaoxin/ChangXiaoxin.github.io.git 4、向本地仓库中添加文件1$git add -f ./* //加-f参数可以把全部文件都添加进来 这样可以把hexo主目录的文件都添加进来（可能会有嵌入git仓库的提示，是因为有的插件或者主题是直接clone的git仓库，把对应的.git文件删掉就好了） 5、同步到github端12$git commit -m "..."$git push origin source 以上代码可以把本地仓库同步到github 6、博客变更操作每次写好文章后把文章添加同步到git仓库，然后重新部署网站 1234567$git add ./*$git commit -m "..."$git push origin source//同步源码信息$hexo g$hexo d//重新部署静态网站 7、新设备同步操作当第一次使用新设备的时候先使用‘git clone http://yourgithubrepo’将博客源码同步到新设备上，然后进入刚刚同步的本地仓库目录安装hexo，就可以无缝衔接写作了 以后每次写完博客的时候都执行一下第六步中的命令把变更同步到远程仓库，然后每次更换设备的时候都执行一下‘git pull’命令更新本地仓库（要先进行ssh-key绑定操作） 以上]]></content>
+    <content type="text"><![CDATA[将hexo博客和文章源码同步到github，以便多平台同步，或者电脑文件丢失后的恢复 1、建立新的分支在github上存放静态网页的仓库中创建新的分支source，并将其设置为默认仓库，用来存放源码 2、克隆到本地仓库在hexo主目录下面克隆仓库 1$git clone https://github.com/changxiaoxin/Changxiaoxin.github.io.git 我们克隆仓库分支只是需要其中的.git管理文件，其他的网页文件是不需要的，所以进入刚刚克隆的文件夹，把.git文件夹复制到hexo主目录，然后就可以删除克隆的文件夹 3、命名远程仓库刚刚接触github，我也不知道这一步到底官方是怎么叫的，我就以自己的理解写的（有不对的地方欢迎指正） 1$git remote git remote add origin https://github.com/ChangXiaoxin/ChangXiaoxin.github.io.git 4、向本地仓库中添加文件1$git add -f ./* //加-f参数可以把全部文件都添加进来 这样可以把hexo主目录的文件都添加进来（可能会有嵌入git仓库的提示，是因为有的插件或者主题是直接clone的git仓库，把对应的.git文件删掉就好了） 5、同步到github端12$git commit -m "..."$git push origin source 以上代码可以把本地仓库同步到github 6、博客变更操作每次写好文章后把文章添加同步到git仓库，然后重新部署网站 1234567$git add ./*$git commit -m "..."$git push origin source//同步源码信息$hexo g$hexo d//重新部署静态网站 7、新设备同步操作当第一次使用新设备的时候先使用git clone http://yourgithubrepo 将博客源码同步到新设备上，然后进入刚刚同步的本地仓库目录安装hexo，就可以无缝衔接写作了 以后每次写完博客的时候都执行一下第六步中的命令把变更同步到远程仓库，然后每次更换设备的时候都执行一下git pull命令更新本地仓库（要先进行ssh-key绑定操作） 以上]]></content>
       <categories>
         <category>笔记</category>
       </categories>
@@ -61,9 +61,9 @@
         <category>笔记</category>
       </categories>
       <tags>
+        <tag>hexo</tag>
         <tag>DNS</tag>
         <tag>域名</tag>
-        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
