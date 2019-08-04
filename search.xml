@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[Verilog学习笔记---建立工程]]></title>
+    <url>%2F20190804%2Fverilog%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%2F</url>
+    <content type="text"><![CDATA[quartus工程建立new projectFile -&gt; New Project Wizard new Verilog HDL FileFile -&gt; new -&gt; Verilog HDL File set top将工程管理窗口的Hierarchy切换为Files,鼠标右击*.v文件，选择Set as Top-Level Entity 设置DeviceAssignments -&gt; Device and Pin Options... 选择Unused Pin -&gt; As input tri-stated 选择Dual-Purpose Pins -&gt; 全都设置为Use as regular I/O 选择Voltage -&gt; Default I/O standard -&gt; 3.3V-LVTTL OK! *.v文件结构1234567891011121314151617181920`timescale 1ns/1psmodule moduleName( input ..., output reg ..., ... ); //定义接口，逗号隔开reg timer; //定义initial //初始化begin...endalways@(posedge clk) //触发事件 begin //触发响应，begin...end之内为代码块 ... endendmodule 综合写完代码以后点击上方工具栏Start Analysis &amp; Elaboration进行综合 分配管脚综合之后最上方工具栏Assignments-&gt;Pin Planner进入管脚分配界面，在下方Location一栏输入分配的管脚 注意每个接口都必须分配好管脚，如果有未分配的管脚会随机分配，造成不可逆的后果，严重时可能会烧坏芯片 编译分配好管脚以后进行Start Compilation 下载程序点击工具栏Programmer进入下载配置界面 点击左上方Hardware Setup -&gt; USB-Blaster然后会自动识别出芯片添加文件勾选Program -&gt; Start 把程序烧写到flash芯片File -&gt; Convert Programming File Configuration device:里面配置芯片 点击下方SOF Data -&gt; Add File添加文件 然后进入下载程序步骤，在下载之前要先start擦除命令，下载完成重启fpga就可以运行程序了 定义寄存器在定义寄存器时，如果寄存器在always块里使用必须定义为reg类型，如果尽是用于连线或是直接赋值需定义为wire类型，输入信号的类型不能定义为reg型，不管是reg类型信号还是wire类型的信号，定义的寄存器宽度必须满足使用使得需要，但必须稍大于或等于需要使用的位宽。若定义寄存器位宽远远大于使用需求则会浪费资源，如果定义的位宽小于使用需求，则会造成数据位截断，导致程序错误。]]></content>
+      <categories>
+        <category>笔记</category>
+        <category>FPGA</category>
+      </categories>
+      <tags>
+        <tag>FPGA</tag>
+        <tag>Verilog</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[TM4c123gxl学习笔记-gpio的配置]]></title>
     <url>%2F20190711%2FTM4c123gxl%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-gpio%E7%9A%84%E9%85%8D%E7%BD%AE%2F</url>
     <content type="text"><![CDATA[设置系统时钟这里和stm32大致是差不多的都要先配置时钟 每一个外设都是在时钟信号的同步下进行工作的，我们首先配置系统的时钟 1234//// Setup the system clock to run at 50 Mhz from PLL with crystal reference//SysCtlClockSet(SYSCTL_SYSDIV_4|SYSCTL_USE_PLL|SYSCTL_XTAL_16MHZ|SYSCTL_OSC_MAIN); 上面的代码即把系统时钟配置为50Mhz 下面分析一下SysCtlClockSet()这个函数，从上面的代码中可以看出这个函数有四个参数(实际上是只有一个参数,这四个值按位取或运算得到真正的参数) 参数 意义 可选值 SYSCTL_SYSDIV_4 时钟源频率除以4 SYSCTL_SYSDIV_1~SYSCTL_SYSDIV_64 SYSCTL_USE_PLL 启用内部PLL(额定值200Mhz) SYSCTL_USE_PLL SYSCTL_USE_OSC. SYSCTL_XTAL_16MHZ 时钟参考源为16Mhz的晶振 可选值很多 SYSCTL_OSC_MAIN 选择主振荡器为时钟源 - 系统在经过pll后频率会变成200Mhz，然后我们利用SYSCTL_SYSDIV_x对200Mhz进行分频得到我们使用的时钟频率（在使用上基本上只用修改SYSCTL_SYSDIV_x参数） 时钟频率计算公式： 1SysCtlClock = 200Mhz/SYSCTL_SYSDIV_4 至此系统时钟配置为50Mhz 启用我们用到的gpio引脚1234567//// Enable and wait for the port to be ready for access//SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF)) &#123; &#125; SysCtlPeripheralEnable()函数就是启用外设的功能,相应的也就有SysCtlPeripheralDisable()函数对外设进行禁用。芯片上电之后，所有外设都是默认禁用状态，所以无论是我们使用gpio、i2c还是spi等外设都要先使用这个函数启用。然后等待外设打开后在进行下一步操作 与gpio有关的参数是SYSCTL_PERIPH_GPIOx,其中最后一位可以是A~F，分别代表6组gpio，每组可分别打开关闭 设置gpio模式关于通用gpio模式的设置只有3个函数 123456GPIOPinTypeGPIOInput(uint32_t ui32Port, uint8_t ui8Pins)//设置gpio为输入模式GPIOPinTypeGPIOOutput(uint32_t ui32Port, uint8_t ui8Pins)//设置gpio为输出模式GPIOPinTypeGPIOOutputOD(uint32_t ui32Port, uint8_t ui8Pins)//设置gpio为开漏输出模式 这三个函数的参数基本是类似的 ui32Port : gpio地址偏移量，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio ui8Pins : gpio的位选择，取值可以是GPIO_PIN_0~7，或者是他们的或运算，或运算代表对多个gpio同时进行操作 对gpio进行写操作1GPIOPinWrite(uint32_t ui32Port, uint8_t ui8Pins, uint8_t ui8Val) 这个函数感觉很别扭，不知道为什么要用到三个参数 ui32Port : 这个参数是gpio口组的选择，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio ui8Pins : 这个参数是打开对该组中某位gpio寄存器的写保护，取值可以是GPIO_PIN_0~7，或者是他们的或运算（或运算代表对多个gpio同时进行操作）为了省事可以#define GPIO_ALL 0xFF，然后所有gpio的操作都可以把这个参数改为GPIO_ALL ui8Val : 这个即送入gpio寄存器的数据，当我们上一个参数使用GPIO_ALL时，这个值就是写入gpio寄存器的值，当我们需要把某位置1时，把该参数写为GPIO_PIN_x即可，同样支持或操作该参数不包含的gpioPIN即置0，若想要把该组所有gpio都置0则把该参数写为0 对gpio进行读操作1GPIOPinRead(uint32_t ui32Port, uint8_t ui8Pins) 读操作跟写操作类似，但是只有两个参数，因为读操作不需要对数据进行关闭写保护操作 ui32Port : 这个参数是gpio口组的选择，取值为GPIO_PORTFx_BASE（x取A~F）代表选择x组gpio ui8Pins : 需要读取的gpioPin，取值可以是GPIO_PIN_0~7，或者是他们的或运算（或运算代表对多个gpio同时进行操作） 注意：读操作函数是有返回值的，且为32位，但是只有7:0有效，分别对应GPIO_PIN7:GPIO_PIN_0 以上]]></content>
@@ -61,9 +74,9 @@
         <category>笔记</category>
       </categories>
       <tags>
-        <tag>hexo</tag>
         <tag>DNS</tag>
         <tag>域名</tag>
+        <tag>hexo</tag>
       </tags>
   </entry>
   <entry>
