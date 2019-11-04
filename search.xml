@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title><![CDATA[marlin配置OLED控制器]]></title>
+    <url>%2F20191104%2Fmarlin%E9%85%8D%E7%BD%AEOLED%E6%8E%A7%E5%88%B6%E5%99%A8%2F</url>
+    <content type="text"><![CDATA[硬件引脚连接 OLED MEGA2560 GND GND VCC 3.3V D0 23 D1 17 RES 27 DC 25 CS 16 ENCODER MEGA2560 BTN_EN1 31 BTN_EN2 33 BTN_ENC 35 GND GND SPEAKER MEGA2560 VCC 37 GND GND 固件修改## 在Configuration.h添加 12345678// mini OLED 128x64 FULL GRAPHICS CONTROLLER#define Mini_OLED_128x64_FULL_GRAPHICS_CONTROLLER#if defined (Mini_OLED_128x64_FULL_GRAPHICS_CONTROLLER) #define DOGLCD #define U8GLIB_SSD1306 #define REPRAP_DISCOUNT_SMART_CONTROLLER #define NEWPANEL#endif 在dogm_lcd_implementation.h添加12#elif defined(U8GLIB_SSD1306)U8GLIB_SSD1306_128X64 u8g(23, 17, 16, 25); // SW SPI Com: SCK = 23, MOSI = 17, CS = 16, A0 = 25 在Marlin_main.cpp的setup函数中添加1234567#if defined (mini_OLED_128x64_FULL_GRAPHICS_CONTROLLER) pinMode(LCD_PINS_DC, OUTPUT); pinMode(LCD_PINS_RST, OUTPUT); digitalWrite(LCD_PINS_RST , LOW); delay(1000); digitalWrite(LCD_PINS_RST , HIGH);#endif 在pins.h末尾添加12345678910111213#if defined (mini_OLED_128x64_FULL_GRAPHICS_CONTROLLER) #ifdef LCD_PINS_D5 #undef LCD_PINS_D5 #define LCD_PINS_D5 -1 #endif #ifdef LCD_PINS_D6 #undef LCD_PINS_D6 #define LCD_PINS_D6 -1 #endif #define LCD_PINS_RST 27 #define LCD_PINS_DC 25#endif]]></content>
+      <tags>
+        <tag>marlin</tag>
+        <tag>OLEL_CONTROLLER</tag>
+      </tags>
+  </entry>
+  <entry>
     <title><![CDATA[Verilog学习笔记---建立工程]]></title>
     <url>%2F20190804%2Fverilog%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0%2F</url>
     <content type="text"><![CDATA[quartus工程建立new projectFile -&gt; New Project Wizard new Verilog HDL FileFile -&gt; new -&gt; Verilog HDL File set top将工程管理窗口的Hierarchy切换为Files,鼠标右击*.v文件，选择Set as Top-Level Entity 设置DeviceAssignments -&gt; Device and Pin Options... 选择Unused Pin -&gt; As input tri-stated 选择Dual-Purpose Pins -&gt; 全都设置为Use as regular I/O 选择Voltage -&gt; Default I/O standard -&gt; 3.3V-LVTTL OK! *.v文件结构1234567891011121314151617181920`timescale 1ns/1psmodule moduleName( input ..., output reg ..., ... ); //定义接口，逗号隔开reg timer; //定义initial //初始化begin...endalways@(posedge clk) //触发事件 begin //触发响应，begin...end之内为代码块 ... endendmodule 综合写完代码以后点击上方工具栏Start Analysis &amp; Elaboration进行综合 分配管脚综合之后最上方工具栏Assignments-&gt;Pin Planner进入管脚分配界面，在下方Location一栏输入分配的管脚 注意每个接口都必须分配好管脚，如果有未分配的管脚会随机分配，造成不可逆的后果，严重时可能会烧坏芯片 编译分配好管脚以后进行Start Compilation 下载程序点击工具栏Programmer进入下载配置界面 点击左上方Hardware Setup -&gt; USB-Blaster然后会自动识别出芯片添加文件勾选Program -&gt; Start 把程序烧写到flash芯片File -&gt; Convert Programming File Configuration device:里面配置芯片 点击下方SOF Data -&gt; Add File添加文件 然后进入下载程序步骤，在下载之前要先start擦除命令，下载完成重启fpga就可以运行程序了 定义寄存器在定义寄存器时，如果寄存器在always块里使用必须定义为reg类型，如果尽是用于连线或是直接赋值需定义为wire类型，输入信号的类型不能定义为reg型，不管是reg类型信号还是wire类型的信号，定义的寄存器宽度必须满足使用使得需要，但必须稍大于或等于需要使用的位宽。若定义寄存器位宽远远大于使用需求则会浪费资源，如果定义的位宽小于使用需求，则会造成数据位截断，导致程序错误。]]></content>
