@@ -1,3 +1,4 @@
+http://changxiaoxin.xyz/20191206/Git使用笔记/
 http://changxiaoxin.xyz/20191121/用python自动登录校园网/
 http://changxiaoxin.xyz/20191104/marlin配置OLED控制器/
 http://changxiaoxin.xyz/20190804/verilog学习笔记/
