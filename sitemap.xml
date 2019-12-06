@@ -2,6 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://changxiaoxin.xyz/about/index.html</loc>
+    
+    <lastmod>2019-12-06T12:05:38.296Z</lastmod>
+    
+  </url>
+  
+  <url>
     <loc>http://changxiaoxin.xyz/20191121/%E7%94%A8python%E8%87%AA%E5%8A%A8%E7%99%BB%E5%BD%95%E6%A0%A1%E5%9B%AD%E7%BD%91/</loc>
     
     <lastmod>2019-12-06T11:33:47.943Z</lastmod>
@@ -68,13 +75,6 @@
     <loc>http://changxiaoxin.xyz/20190710/test/</loc>
     
     <lastmod>2019-07-11T03:53:43.515Z</lastmod>
-    
-  </url>
-  
-  <url>
-    <loc>http://changxiaoxin.xyz/about/index.html</loc>
-    
-    <lastmod>2019-07-10T19:38:52.431Z</lastmod>
     
   </url>
   
