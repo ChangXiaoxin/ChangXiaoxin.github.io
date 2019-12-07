@@ -113,7 +113,7 @@
 <meta property="og:site_name" content="六月飞霜">
 <meta property="og:description" content="记录一些git命令">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2019-12-06T14:24:17.963Z">
+<meta property="og:updated_time" content="2019-12-07T08:49:43.214Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="git使用笔记">
 <meta name="twitter:description" content="记录一些git命令">
@@ -433,13 +433,23 @@
                 
               
 
-              <time title="创建时间：2019-12-06 20:07:54 / 修改时间：22:24:17" itemprop="dateCreated datePublished" datetime="2019-12-06T20:07:54+08:00">2019-12-06</time>
+              <time title="创建时间：2019-12-06 20:07:54" itemprop="dateCreated datePublished" datetime="2019-12-06T20:07:54+08:00">2019-12-06</time>
             </span>
           
 
           
             
 
+            
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2019-12-07 16:49:43" itemprop="dateModified" datetime="2019-12-07T16:49:43+08:00">2019-12-07</time>
+              </span>
             
           
 
@@ -517,8 +527,8 @@
       
 
       
-        <h1 id="git简介"><a href="#git简介" class="headerlink" title="git简介"></a>git简介</h1><p>git可以说是世界上最先进的分布式版本控制系统了，而且它<br>是开源的。git是Linux大佬Linus Torvalds为了帮助管<br>理Linux内核开发而开发一个开源的版本控制软件(大佬的世界<br>总是这样让我们常人无法企及)，由于git具有速度快、使用灵<br>活、可以离线工作等特点，使得git在开发者间快速流行起来<br>。</p>
-<h1 id="为什么要用git"><a href="#为什么要用git" class="headerlink" title="为什么要用git"></a>为什么要用git</h1><p>对于开发者来讲，版本控制非常重要。比如我们开发一个项目<br>，当我们想要添加新的功能的时候，就会往项目中添加一些代<br>码，总会有一些奇怪的bug发生，改来改去最后自己也不知道<br>原来调通的代码是怎么写的了。到最后可能导致不仅bug没有<br>修复好，而且项目也恢复不到原来的样子了。很多人可能会在<br>改动前先把整个项目copy一份，然后就可以随便改了，但是随<br>着改的越来越多，副本也越来越多，到最后光看名字根本分不<br>清哪个是哪个了。但是如果你使用了版本控制软件，就不<br>用copy那么多副本了，它会帮你记录每一次版本的变更，而且<br>你可以根据变更时添加的注释方便的恢复到任意一个版本。</p>
+        <h1 id="git简介"><a href="#git简介" class="headerlink" title="git简介"></a>git简介</h1><p>git可以说是世界上最先进的分布式版本控制系统了，而且它是开源的。git是Linux大佬Linus Torvalds为了帮助管理Linux内核开而开发一个开源的版本控制软件(大佬的世界总是这样让我们常人无法企及)，由于git具有速度快、使用灵活、可以离线工作等特点，使得git在开发者间快速流行起来。</p>
+<h1 id="为什么要用git"><a href="#为什么要用git" class="headerlink" title="为什么要用git"></a>为什么要用git</h1><p>对于开发者来讲，版本控制非常重要。比如我们开发一个项目，当我们想要添加新的功能的时候，就会往项目中添加一些代码，总会有一些奇怪的bug发生，改来改去最后自己也不知道原来调通的代码是怎么写的了。到最后可能导致不仅bug没有修复好，而且项目也恢复不到原来的样子了。很多人可能会在改动前先把整个项目copy一份，然后就可以随便改了，但是随着改的越来越多，副本也越来越多，到最后光看名字根本分不清哪个是哪个了。但是如果你使用了版本控制软件，就不用copy那么多副本了，它会帮你记录每一次版本的变更，而且你可以根据变更时添加的注释方便的恢复到任意一个版本。</p>
 <h1 id="安装git及配置"><a href="#安装git及配置" class="headerlink" title="安装git及配置"></a>安装git及配置</h1><h3 id="Ubuntu安装"><a href="#Ubuntu安装" class="headerlink" title="Ubuntu安装"></a>Ubuntu安装</h3><p>ubuntu直接apt安装即可</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="builtin-name">get</span> install git</span><br></pre></td></tr></table></figure>
 
@@ -532,8 +542,7 @@
 <h1 id="向git仓库添加新文件"><a href="#向git仓库添加新文件" class="headerlink" title="向git仓库添加新文件"></a>向git仓库添加新文件</h1><p>以下是向git仓库中添加readme.md文件的过程</p>
 <figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">$ touch readme<span class="selector-class">.md</span>     <span class="comment">//新建readme文件</span></span><br><span class="line">$ git add readme<span class="selector-class">.md</span>   <span class="comment">//添加readme文件到git暂存区</span></span><br><span class="line">$ git commit -m <span class="string">"add readme.md"</span>  <span class="comment">//把git暂存区内容更新到master</span></span><br></pre></td></tr></table></figure>
 
-<p>关于添加文件到暂存区，可以简单的理解为我们网上购物用的购物车，我们可以<br>向购物车内多次添加商品，也就是可以多次通过<code>git add filename</code>向暂存<br>区添加文件，然后把购物车里的商品一起生产订单付款，即通过<code>git commit
--m “your commit”</code>命令将暂存区的所有文件都更新到当前分支<code>master</code>中<br>，<code>master</code>是每个仓库默认的主分支，由于我们的仓库还没有新建分支，所以<br>只有这一个分支。<br><em>（注：只有我们<code>commit</code>了以后才会把暂存区的更改更新到当前分支中，并且<br>我们每次修改一个文件后都要运行一次<code>git add</code>命令才能把更改保存到暂存区<br>）</em></p>
+<p>关于添加文件到暂存区，可以简单的理解为我们网上购物用的购物车，我们可以向购物车内多次添加商品，也就是可以多次通过<code>git add filename</code>向暂存区添加文件，然后把购物车里的商品一起生产订单付款，即通过<code>git commit-m “your commit”</code>命令将暂存区的所有文件都更新到当前分支<code>master</code>中，<code>master</code>是每个仓库默认的主分支，由于我们的仓库还没有新建分支，所以只有这一个分支。<br><em>（注：只有我们<code>commit</code>了以后才会把暂存区的更改更新到当前分支中，并且我们每次修改一个文件后都要运行一次<code>git add</code>命令才能把更改保存到暂存区）</em></p>
 <h1 id="查看仓库当前状态"><a href="#查看仓库当前状态" class="headerlink" title="查看仓库当前状态"></a>查看仓库当前状态</h1><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">$ git status</span><br><span class="line">On branch master</span><br><span class="line">Your branch is up to date <span class="keyword">with</span> <span class="string">'origin/master'</span>.</span><br><span class="line"></span><br><span class="line">Changes <span class="keyword">not</span> staged <span class="keyword">for</span> <span class="keyword">commit</span>:</span><br><span class="line">  (<span class="keyword">use</span> <span class="string">"git add &lt;file&gt;..."</span> <span class="keyword">to</span> <span class="keyword">update</span> what will be committed)</span><br><span class="line">  (<span class="keyword">use</span> <span class="string">"git checkout -- &lt;file&gt;..."</span> <span class="keyword">to</span> discard changes <span class="keyword">in</span> working <span class="keyword">directory</span>)</span><br><span class="line"></span><br><span class="line">	modified:   readme.md</span><br><span class="line"></span><br><span class="line"><span class="keyword">no</span> changes added <span class="keyword">to</span> <span class="keyword">commit</span> (<span class="keyword">use</span> <span class="string">"git add"</span> <span class="keyword">and</span>/<span class="keyword">or</span> <span class="string">"git commit -a"</span>)</span><br></pre></td></tr></table></figure>
 
 <p>利用<code>git status</code>可以查看当前仓库有哪些文件被修改了，我们可以看到输出<br>信息提示我们<code>readme.md</code>文件被修改了</p>
@@ -548,7 +557,7 @@
 -hard &lt;commit id&gt;</code>来回退到任一版本。</p>
 <figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git reset <span class="params">--hard</span> HEAD^ <span class="string">//</span>回退到上一个版本</span><br><span class="line">$ git reset <span class="params">--hard</span> HEAD^^  <span class="string">//</span>回退到上上版本</span><br><span class="line">$ git reset <span class="params">--hard</span> HEAD~20   <span class="string">//</span>回到上二十个版本</span><br><span class="line"><span class="string">...</span></span><br></pre></td></tr></table></figure>
 
-<p>一旦我们会退到之前的版本，那么当我们运行<code>git log</code>命令的时候，在这个<br>版本之后的更新信息都会消失不见，那么我们怎么返回更超前的版本呢？我们<br>可以通过<code>git reflog</code>命令来查看操作历史，找到回退版本那次操做前的版<br>本号，就可以切换到更超前的版本了。</p>
+<p>一旦我们会退到之前的版本，那么当我们运行<code>git log</code>命令的时候，在这个版本之后的更新信息都会消失不见，那么我们怎么返回更超前的版本呢？我们可以通过<code>git reflog</code>命令来查看操作历史，找到回退版本那次操做前的版本号，就可以切换到更超前的版本了。</p>
 <h1 id="撤销文件修改"><a href="#撤销文件修改" class="headerlink" title="撤销文件修改"></a>撤销文件修改</h1><p>当我们想要撤销当前的修改的时候会有这几种情况：</p>
 <ul>
 <li><p>该文件的修改只存在于工作区，还未被提交到暂存区</p>
